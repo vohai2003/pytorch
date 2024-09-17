@@ -43,4 +43,14 @@ jobs:
     - name: Build wheel
       run: |
         python setup.py bdist_wheel
+        python setup.py install
+    - name: Testing new wheel
+      run: |
+        python -c "import torch"
+    - name: Configuring Git and upload wheel
+          git config --global user.email "vophanphuochai2003@gmail.com"
+          git config --global user.name "vohai2003"
+          git add -f ./dist/*.whl
+          git commit -m 'Pushing new wheel'
+          git push
         
