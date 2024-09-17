@@ -1,13 +1,13 @@
 # This workflow will install Python dependencies, run tests and lint with a variety of Python versions
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
 
-name: Pytorch 2.4.1 Windows CUDA 11.8
+name: Pytorch 2.4 Windows CUDA 11.8
 
 on:
   push:
-    branches: [ "v2.4.1" ]
+    branches: [ "orig/release/2.4" ]
   pull_request:
-    branches: [ "v2.4.1" ]
+    branches: [ "orig/release/2.4" ]
 
 jobs:
   build:
