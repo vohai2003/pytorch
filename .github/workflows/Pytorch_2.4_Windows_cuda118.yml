@@ -3,6 +3,11 @@
 
 name: Pytorch 2.4 Windows CUDA 11.8
 
+env:
+  USE_CUDA : "1"
+  USE_CUDNN : "1"
+  USE_NUMPY : "1"
+  TORCH_CUDA_ARCH_LIST : "3.5 3.7 5.0 5.2 5.3 6.0 6.2 7.0 7.2 7.5 8.0"
 on:
   push:
     branches: [ "orig/release/2.4" ]
@@ -34,12 +39,6 @@ jobs:
         python -m pip install --upgrade pip
         python -m pip install flake8 pytest mkl-static mkl-include
         pip install -r requirements.txt
-    - name: Set environment variables
-      run: |
-        set USE_CUDA = 1
-        set USE_CUDNN = 1
-        set USE_NUMPY = 1
-        set TORCH_CUDA_ARCH_LIST = "3.5 3.7 5.0 5.2 5.3 6.0 6.2 7.0 7.2 7.5 8.0"
     - name: Build wheel
       run: |
         python setup.py bdist_wheel
