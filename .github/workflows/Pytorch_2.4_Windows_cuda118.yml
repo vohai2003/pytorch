@@ -8,6 +8,7 @@ on:
     branches: [ "orig/release/2.4" ]
   pull_request:
     branches: [ "orig/release/2.4" ]
+  workflow_dispatch:
 
 jobs:
   build:
