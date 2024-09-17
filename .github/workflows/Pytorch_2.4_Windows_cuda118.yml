@@ -1,0 +1,46 @@
+# This workflow will install Python dependencies, run tests and lint with a variety of Python versions
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
+
+name: Pytorch 2.4 Windows CUDA 11.8
+
+on:
+  push:
+    branches: [ "orig/release/2.4" ]
+  pull_request:
+    branches: [ "orig/release/2.4" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+
+    runs-on: windows-2022
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.8","3.9", "3.10", "3.11", "3.12"]
+
+    steps:
+    - uses: ilammy/msvc-dev-cmd@v1.4.1
+    - uses: actions/checkout@v4       
+    - uses: Jimver/cuda-toolkit@v0.2.16
+      with:
+        cuda: "11.8.0"
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v3
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install flake8 pytest mkl-static mkl-include
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+    - name: Set environment variables
+      run: |
+        set USE_CUDA = 1
+        set USE_CUDNN = 1
+        set USE_NUMPY = 1
+        set TORCH_CUDA_ARCH_LIST = "3.5 3.7 5.0 5.2 5.3 6.0 6.2 7.0 7.2 7.5 8.0"
+    - name: Build wheel
+      run: |
+        python setup.py bdist_wheel
+        
