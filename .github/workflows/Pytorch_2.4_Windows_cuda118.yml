@@ -7,7 +7,6 @@ env:
   USE_CUDA : "1"
   USE_CUDNN : "1"
   USE_NUMPY : "1"
-  TORCH_CUDA_ARCH_LIST : "3.5 3.7 5.0 5.2 5.3 6.0 6.2 7.0 7.2 7.5 8.0"
 on:
   push:
     branches: [ "orig/release/2.4" ]
@@ -24,6 +23,7 @@ jobs:
       matrix:
         environment_script: ["C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvars64.bat"]
         python-version: ["3.8","3.9","3.10","3.11","3.12"]
+        cc-capability: ["3.5", "3.7", "5.0", "5.2", "5.3", "6.0", "6.2", "7.0", "7.2", "7.5", "8.0"]
           
 
 
@@ -36,6 +36,9 @@ jobs:
       uses: actions/setup-python@v3
       with:
         python-version: ${{ matrix.python-version }}
+    - name: Set CUDA capability ${{ matrix.cc-capability }}
+      run: |
+        $env:TORCH_CUDA_ARCH_LIST = ${{ matrix.cc-capability }}
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
@@ -56,6 +59,12 @@ jobs:
     - name: Testing new wheel
       run: |
         python -c "import torch"
+    - name: Rename wheel
+      run: |
+        $file = Get-ChildItem("dist/*.whl")
+        $pyver = ${{ matrix.python-version }}.Replace(".","")
+        $cudacc = $env:TORCH_CUDA_ARCH_LIST.Replace(".","")
+        Rename-Item -Path $file -NewName "torch-2.4.0-cp$pyver-cudacc$cudacc-win_amd64.whl"
     - name: Configuring Git and upload wheel
       run: |
           git config --global user.email "vophanphuochai2003@gmail.com"
