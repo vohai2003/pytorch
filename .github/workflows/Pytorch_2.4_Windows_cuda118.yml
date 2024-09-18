@@ -18,11 +18,11 @@ on:
 jobs:
   build:
 
-    runs-on: windows-2022
+    runs-on: windows-2019
     strategy:
       fail-fast: false
       matrix:
-        environment_script: ["C:/Program Files/Microsoft Visual Studio/2022/Enterprise/VC/Auxiliary/Build/vcvars64.bat"]
+        environment_script: ["C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvars64.bat"]
         python-version: ["3.8","3.9","3.10","3.11","3.12"]
           
 
