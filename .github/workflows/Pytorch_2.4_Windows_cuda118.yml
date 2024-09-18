@@ -15,8 +15,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
 
+  build:
     runs-on: windows-2019
     strategy:
       fail-fast: false
@@ -24,9 +24,8 @@ jobs:
         environment_script: ["C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvars64.bat"]
         python-version: ["3.8","3.9","3.10","3.11","3.12"]
         cc-capability: ["3.5", "3.7", "5.0", "5.2", "5.3", "6.0", "6.2", "7.0", "7.2", "7.5", "8.0"]
+    name: Pytorch 2.4 - Python ${{ matrix.python-version }} - CUDA CC ${{ matrix.cc-capability }}
           
-
-
     steps:
     - uses: actions/checkout@v4       
     - uses: Jimver/cuda-toolkit@v0.2.16
