@@ -41,9 +41,14 @@ jobs:
         python -m pip install --upgrade pip
         python -m pip install flake8 pytest mkl-static mkl-include
         pip install -r requirements.txt
+    - name: Build source
+      run: |
+        python setup.py build
     - name: Build wheel
       run: |
         python setup.py bdist_wheel
+    - name: Install wheel
+      run: |
         python setup.py install
     - name: Testing new wheel
       run: |
