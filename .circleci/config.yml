@@ -3,7 +3,8 @@ version: 2.1
 executors:
   windows_executor:
     machine:
-      image: "windows-server-2019-gui:current"
+      image: 'windows-server-2019-vs2019:2024.05.1'
+      shell: powershell.exe -ExecutionPolicy Bypass
     environment:
       USE_CUDA: "1"
       USE_CUDNN: "1"
