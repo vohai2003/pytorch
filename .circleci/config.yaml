@@ -1,0 +1,100 @@
+version: 2.1
+
+executors:
+  windows_executor:
+    machine:
+      image: windows-server-2019
+    environment:
+      USE_CUDA: "1"
+      USE_CUDNN: "1"
+      USE_NUMPY: "1"
+
+jobs:
+  build:
+    executor: windows_executor
+    parameters:
+      python-version:
+        type: string
+      cc-capability:
+        type: string
+
+    steps:
+      - checkout
+
+      - run:
+          name: Install CUDA toolkit 11.8
+          command: |
+            curl -o cuda_installer.exe https://developer.download.nvidia.com/compute/cuda/11.8.0/local_installers/cuda_11.8.0_511.79_windows.exe
+            ./cuda_installer.exe /quiet /norestart
+
+      - run:
+          name: Set up Python
+          command: |
+            choco install python --version %{{ python-version }}
+            refreshenv
+
+      - run:
+          name: Set CUDA capability
+          command: |
+            set TORCH_CUDA_ARCH_LIST=%{{ cc-capability }}
+
+      - run:
+          name: Install dependencies
+          command: |
+            python -m pip install --upgrade pip
+            pip install flake8 pytest mkl-static mkl-include
+            pip install -r requirements.txt
+
+      - run:
+          name: Build extensions
+          command: |
+            python setup.py build_ext
+
+      - run:
+          name: Build all source
+          command: |
+            python setup.py build
+
+      - run:
+          name: Build wheel
+          command: |
+            python setup.py bdist_wheel
+
+      - run:
+          name: Install wheel
+          command: |
+            python setup.py install
+
+      - run:
+          name: Testing new wheel
+          command: |
+            python -c "import torch"
+
+      - run:
+          name: Rename wheel
+          command: |
+            for /f %f in ('dir /b dist\*.whl') do rename %f torch-2.4.0-cp%{{ python-version | replace(".", "") }}-cudacc%{{ cc-capability | replace(".", "") }}-win_amd64.whl
+
+      - run:
+          name: Configure Git and upload wheel
+          command: |
+            git config --global user.email "vophanphuochai2003@gmail.com"
+            git config --global user.name "vohai2003"
+            git config --global user.password "WALKERmeet!1"
+            git add -f ./dist/*.whl
+            git commit -m 'Pytorch 2.4 - All CUDA CC supported'
+            git push
+
+workflows:
+  version: 2
+  test:
+    jobs:
+      - build:
+          matrix:
+            parameters:
+              python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
+              cc-capability: ["3.5", "3.7", "5.0", "5.2", "5.3", "6.0", "6.2", "7.0", "7.2", "7.5", "8.0"]
+          filters:
+            branches:
+              only:
+                - orig/release/2.4
