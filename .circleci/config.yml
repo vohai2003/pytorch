@@ -4,7 +4,6 @@ version: 2.1
 
 jobs:
   build:
-    executor: windows_executor
     parameters:
       python-version:
         type: string
