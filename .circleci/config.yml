@@ -3,7 +3,7 @@ version: 2.1
 executors:
   windows_executor:
     machine:
-      image: "windows-server-2019-cli:current"
+      image: "windows-server-2019:current"
     environment:
       USE_CUDA: "1"
       USE_CUDNN: "1"
